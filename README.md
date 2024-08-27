@@ -17,6 +17,6 @@ numpy == 1.23.4
 openai == 0.27.2
 pandas == 1.5.2
 ```
-If using TrojAI dataset, refer to the code inside trojai directory. Otherwise, simply run ```python main.py```. 
+If using TrojAI dataset, run ```cd trojai; python parafuzz.py```. Otherwise, simply run ```python main.py```. 
 
 The RAP directory is constructed on https://github.com/lancopku/RAP. Refer to the original repo for environment and code structure. Only include the necessary code for evaluation against attacks (EP, StyleBKD, HiddenKiller) here. 
