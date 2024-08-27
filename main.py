@@ -152,24 +152,6 @@ def rephrase_victim(text, prompt, split, batch_size=10):
     return new_text, all_reph
 
 
-#the forward pass if using this loading format
-def evaluaion(model, loader):
-    model.eval()
-    total_number = 0
-    total_correct = 0
-    with torch.no_grad():
-        for padded_text, attention_masks, labels in loader:
-            if torch.cuda.is_available():
-                padded_text,attention_masks, labels = padded_text.cuda(), attention_masks.cuda(), labels.cuda()
-            output = model(padded_text, attention_masks)[0]
-            _, idx = torch.max(output, dim=1)
-            correct = (idx == labels).sum().item()
-            total_correct += correct
-            total_number += labels.size(0)
-        acc = total_correct / total_number
-        print(acc)
-        return acc
-
 def read_data(file_path):
     import pandas as pd
     data = pd.read_csv(file_path, sep='\t').values.tolist()
