@@ -75,29 +75,6 @@ def read_config(DATA_DIR, mname):
     return model_info
 
 
-def imply(input):
-    from transformers import T5ForConditionalGeneration,T5Tokenizer,T5Config
-    #tokenizer = T5Tokenizer.from_pretrained('ramsrigouthamg/t5_paraphraser')
-    tokenizer = T5Tokenizer.from_pretrained('t5-base')
-    input_ = "paraphrase: "+ input + ' </s>'
-    encoding = tokenizer.encode_plus(input_, max_length=256, pad_to_max_length=True, return_tensors="pt")
-    input_ids, attention_masks = encoding["input_ids"].cuda(), encoding["attention_mask"].cuda()
-    state_dict = torch.load('/home/yan390/nlp_AMI/DBS/trojai_r6/T5_paraphrase/t5_paraphrase/pytorch_model.bin')
-    config = T5Config.from_json_file('/home/yan390/nlp_AMI/DBS/trojai_r6/T5_paraphrase/t5_paraphrase/config.json')
-    #model = T5ForConditionalGeneration.from_pretrained('t5_paraphrase')#(config)
-    model = T5ForConditionalGeneration(config).cuda()
-    model.load_state_dict(state_dict, strict=False)
-    beam_outputs = model.generate(input_ids=input_ids, attention_mask=attention_masks,do_sample=True,max_length=256,top_k=120,top_p=0.98,early_stopping=True,num_return_sequences=10)
-    final_outputs =[]
-    for beam_output in beam_outputs:
-        sent = tokenizer.decode(beam_output, skip_special_tokens=True,clean_up_tokenization_spaces=True)
-        if sent.lower() != input.lower() and sent not in final_outputs:
-            return sent
-            #final_outputs.append(sent)
-    #for i, final_output in enumerate(final_outputs):
-    #    print("{}: {}".format(i, final_output))
-
-
 def chatgpt_rephrase(s, prompt=None, return_prompt=False):
     openai.api_key = ''
     if prompt is None:
@@ -182,7 +159,7 @@ def metrics(TP, TN, FP, FN):
         F1 = 2*prec*recall/(prec+recall)
     return prec, recall, F1
 
-def read_r6_generated(DATA_DIR, mid, mname, split='poisoned'):
+def read_r6_generated(DATA_DIR, mid, mname, split='poisoned'): #read validation dataset. The TrojAI dataset only comes with 10 example sentences, so I create the validation set by myself.
     fp = f'{DATA_DIR}/models/{mname}/{split}_data.csv'
     df = pd.read_csv(fp).values
     text = [d[1] for d in df]
