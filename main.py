@@ -216,12 +216,8 @@ def cal_metrics(orig_clean_preds, orig_poisoned_preds, clean_preds, poisoned_pre
     return correct_clean_reph, correct_poison_reph, (orig_CACC, CACC, orig_ASR, ASR, TP, TN, FP, FN, prec, recall, F1)
 
 
-def evaluate_seed(seed_prompt='sound like a young girl'):
-    target_label = 0
-    victim_label = 1
-    clean_test_path = 'data/clean/ag/test.tsv' 
-    poison_test_path = 'data/scpn/20/ag/test.tsv'
-    model, tokenizer = load_model_bert()
+def evaluate_seed(seed_prompt='sound like a young girl', clean_test_path = 'data/clean/ag/test.tsv', poison_test_path = 'data/scpn/20/ag/test.tsv', target_label = 0, victim_label = 1, model_path='HiddenKiller/poison_bert_ag.pkl' ):
+    model, tokenizer = load_model_bert(model_path)
     clean_test_data, clean_test_labels = read_tsv_data(clean_test_path, label=target_label, total_num=200)
     poison_test_data, poison_test_labels = read_tsv_data(poison_test_path, label=target_label, total_num=200)
 
@@ -268,7 +264,7 @@ def gpt_mutate(instruction, i=3):
     print(mutations)
     return mutations
 
-
+# three mutation strategies
 def fancy_mutate(cur_pmpt):
     global RECORD, SEEN
     #keyword
@@ -282,7 +278,7 @@ def fancy_mutate(cur_pmpt):
     evo_mutations = gpt_mutate(instruct)
     return kw_mutations + struct_mutations + evo_mutations
 
-
+#the defines single fuzzing step and is called by function named fuzzing below
 def fuzzing_step(prompt, model, tokenizer, target_label, victim_label, clean_data, poison_data):
     global GF1, LF1, RECORD, TRIAL, QUEUE, GCCOV, LCCOV, GPCOV, LPCOV
     clean_data, reph_clean = rephrase_victim(clean_data, prompt, 'clean') #validation data
@@ -327,13 +323,9 @@ def extract_max():
             max_idx = idx
     return max_idx
 
-def fuzz(reph_seed):
+def fuzz(reph_seed, clean_dev_path = 'data/clean/ag/dev.tsv', real_dev_path = 'data/scpn/20/ag/dev.tsv', target_label = 0, victim_label = 1, model_path='HiddenKiller/poison_bert_ag.pkl'):
     global GF1, LF1, RECORD, TRIAL, QUEUE, GCCOV, LCCOV, GPCOV, LPCOV, SEEN
-    target_label = 0
-    victim_label = 1
-    clean_dev_path = 'data/clean/ag/dev.tsv'
-    real_dev_path = 'data/scpn/20/ag/dev.tsv'
-    subject_model, tokenizer = load_model_bert()
+    subject_model, tokenizer = load_model_bert(model_path)
     victim_data, _= read_tsv_data(clean_dev_path, label=target_label, total_num=50)
     #fake_data, _  = read_tsv_data('crafted_data.csv', label=target_label, total_num=20)
     fake_data, _ = read_tsv_data(real_dev_path, label=target_label, total_num=50)
