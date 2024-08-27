@@ -4,7 +4,7 @@ code for paper: ParaFuzz: An Interpretability-Driven Technique for Detecting Poi
 You can set up an environment as follows:
 
 ```
-conda create --name parafuzz python=3.8 -y (help)
+conda create --name parafuzz python=3.8 -y 
 
 conda activate parafuzz
 
