@@ -18,7 +18,7 @@ openai == 0.27.2
 pandas == 1.5.2
 ```
 
-For typical dataset such as Twitter Hate soeech/SST-2, simply run ```python main.py```. No other directories are needed.
+For typical dataset such as Twitter Hate speech/SST-2, simply run ```python main.py```. No other directories are needed.
 
 If using TrojAI dataset, run ```cd trojai; python parafuzz.py```. 
 
